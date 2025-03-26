@@ -2,28 +2,27 @@ import DetailsTasks from "./TaskDescription";
 import ListTasks from "./ListTasks";
 import Button from "../common/Button";
 import TaskForm from "./TaskForm";
-import { useEffect } from "react";
 import useTasksStore from "../store/TasksStore";
 
-// { Task Main Component }
 const TasksContainer = () => {
-
-  const { setSelectedTask, showCreateTask, setShowCreateTask } = useTasksStore();
+  const {
+    setSelectedTask,
+    showCreateTask,
+    setShowCreateTask,
+    task,
+    changeStatus,
+    deleteTask,
+  } = useTasksStore();
 
   const handleShowCreateTask = (task) => {
-    setSelectedTask(task)
-    setShowCreateTask(!showCreateTask);
+    setSelectedTask(task);
+    setShowCreateTask(true);
   };
-  useEffect(() => {
-    
-    console.log("showCreateTask", showCreateTask);
-  
 
-
-  }, [showCreateTask])
-  
-
-  
+  const handleDelete = () => {
+    deleteTask(task.id);
+    setSelectedTask({});
+  };
 
   return (
     <div className="p-5">
@@ -45,20 +44,41 @@ const TasksContainer = () => {
         </div>
 
         <div className="flex-1">
-        {showCreateTask ? (
-          <TaskForm />
-        ) : (
-          <>
-            <div className="border-1 border-gray-300 rounded-lg overflow-y-auto">
-              <DetailsTasks />
+          {showCreateTask ? (
+            <TaskForm />
+          ) : task.id ? (
+            <div>
+              <div className="border-1 border-gray-300 rounded-lg overflow-y-auto">
+                <DetailsTasks />
+              </div>
+              <div className="mt-3 flex justify-center gap-5 border-1 border-gray-300 rounded-lg p-3 bg-slate-100">
+                <Button
+                  text={task.status}
+                  onClick={() => changeStatus(task)}
+                  custom={
+                    task.status === "Completed"
+                      ? "bg-cyan-600 text-white hover:bg-cyan-700"
+                      : ""
+                  }
+                />
+                <Button
+                  text={"Edit"}
+                  custom={"hover:bg-cyan-600 hover:text-white"}
+                  onClick={() => setShowCreateTask(!showCreateTask)}
+                />
+                <Button
+                  text={"Delete"}
+                  custom={"hover:bg-cyan-600 hover:text-white"}
+                  onClick={() => handleDelete()}
+                />
+              </div>
             </div>
-            <div className="mt-3 flex justify-center gap-5 border-1 border-gray-300 rounded-lg p-3 bg-slate-100">
-              <Button text={"Complete"} />
-              <Button text={"Edit"} />
-              <Button text={"Delete"} />
-            </div>
-            </>
-        )}
+          ) : (
+            <p className="bg-orange-100 p-2.5 rounded-md text-center text-orange-400">
+              {" "}
+              Por favor selecciona una tarea
+            </p>
+          )}
         </div>
       </div>
     </div>

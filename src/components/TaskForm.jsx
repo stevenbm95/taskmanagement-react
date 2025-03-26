@@ -1,27 +1,21 @@
-import React from "react";
 import { useForm } from "react-hook-form";
 import Button from "../common/Button";
 import useTasksStore from "../store/TasksStore";
 
 const TaskForm = () => {
-  const {task, addTask, setShowCreateTask, setSelectedTask, showCreateTask } = useTasksStore();
+  const {task, addTask, setShowCreateTask, showCreateTask, editTask } = useTasksStore();
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
 
   const onSubmit = (data) => {
-
-    // console.log(data);
-    addTask(data);
-    // setSelectedTask(data)
-    setShowCreateTask(!showCreateTask);
-  
+    task.id ? editTask({ ...task, ...data }) : addTask(data);
+    setShowCreateTask(!showCreateTask);  
   };
-  console.log(task);
+
   const showError = (error) => <p className="text-red-500">{error}</p>;
 
   return (
@@ -30,6 +24,7 @@ const TaskForm = () => {
         className="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg  w-full p-1.5 mb-1"
         placeholder="Title"
         {...register("title", { required: true, minLength: 3 })}
+        defaultValue={task.title}
       />
       {errors.title && showError("Title is required and min 3 characters")}
       <label
@@ -43,15 +38,15 @@ const TaskForm = () => {
         {...register("description", {
           required: true,
           minLength: 3,
-          maxLength: 100,
+          maxLength: 300,
         })}
+        defaultValue={task.description}
       />
       {errors.description &&
         showError("Descriprion is required and min 3 characters")}
       <Button
-        // onClick={setShowCreateTask(false)}
         type="submit"
-        text={"Create Task"}
+        text={task ? "Update Task" : "Create Task"}
         custom={
           "bg-cyan-600 text-white py-2 px-4 rounded-lg hover:bg-cyan-700 mt-3"
         }
